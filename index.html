@@ -6,6 +6,12 @@
    <meta http-equiv="Content-Type" content="text/html">
    <title>DSL Grading Dashboard</title>
    <link rel="stylesheet" type="text/css" media="all" href="css/styles.css">
+
+   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+   <script type="text/javascript" src="http://twitter.github.io/bootstrap/assets/js/bootstrap-dropdown.js"></script>
+
 </head>
 
 <body ng-controller="GitHubCtrl">
@@ -14,12 +20,48 @@
    <div>
       <h1>DSL Grading Dashboard</h1>
 
-      <p>Enter Github Username and Reponame </p>
+   <h2>Github Username:</h2> <br>
+   <label>
+       <input type="radio" value="jeansung" id="ghfieldname" ng-model="username" checked> Jean Sung
+   </label> 
+
+   <label>
+       <input type="radio" value="bwiedermann" id="ghfieldname" ng-model="username" checked> Prof Ben 
+   </label> 
+
+   <label>
+       <input type="radio" value="hmc-aozdemir" id="ghfieldname" ng-model="username" checked> Alex O.
+   </label> 
+
+
+   <h2>Github Repo:</h2> <br>
+
+   <label>
+       <input type="radio" value="internal-lab" id="ghfieldname" ng-model="reponame" checked> Internal Lab 
+   </label> 
+
+   <label>
+       <input type="radio" value="piconot-external" id="ghfieldname" ng-model="reponame" checked> External Lab 
+   </label> 
+
+   <label>
+       <input type="radio" value="project-notebook" id="ghfieldname" ng-model="reponame" checked> Project Notebook 
+   </label> 
+
+   <label>
+       <input type="radio" value="what-is-a-DSL" id="ghfieldname" ng-model="reponame" checked> What is a DSL
+   </label> 
+
+
+      <p>Or, Enter Github Username and Reponame </p>
 
       <input type="text" id="ghfieldname" ng-model="username" placeholder="Github username...">
        <br> 
       <input type="text" id="ghfieldname" ng-model="reponame" placeholder="Github reponame...">
-      <br> 
+
+
+      <br>
+
       <a href="#" id="ghsubmitbtn" ng-click="getGitInfo()">Get Files for User + Repo</a>
 
       <div id="ghapidata" class="clearfix"></div>
@@ -85,7 +127,7 @@
                .success(function (data) {
                   if (data.name == "") data.name = data.name;
                   $scope.reponame = data.name;
-                  $scope.timestamp = data.updated_at
+                  $scope.timestamp = data.pushed_at
                   $scope.loaded = true;
                })
                .error(function () {

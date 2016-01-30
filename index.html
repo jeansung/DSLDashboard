@@ -15,62 +15,79 @@
 </head>
 
 <body ng-controller="GitHubCtrl">
-
    <div id="w">
+      <!-- (1) Get repositories for a given organization -->
       <div>
          <h1>DSL Grading Dashboard</h1>
-
-         <h2>Github Username:</h2> <br>
-         <label>
-           <input type="radio" value="jeansung" id="ghfieldname" ng-model="username" checked> Jean Sung
-        </label> 
-
-        <label>
-           <input type="radio" value="bwiedermann" id="ghfieldname" ng-model="username" checked> Prof Ben 
-        </label> 
-
-        <label>
-           <input type="radio" value="hmc-aozdemir" id="ghfieldname" ng-model="username" checked> Alex O.
-        </label> 
-
-
-        <h2>Github Repo:</h2> <br>
-
-        <label>
-           <input type="radio" value="internal-lab" id="ghfieldname" ng-model="reponame" checked> Internal Lab 
-        </label> 
-
-        <label>
-           <input type="radio" value="piconot-external" id="ghfieldname" ng-model="reponame" checked> External Lab 
-        </label> 
-
-        <label>
-           <input type="radio" value="project-notebook" id="ghfieldname" ng-model="reponame" checked> Project Notebook 
-        </label> 
-
-        <label>
-           <input type="radio" value="what-is-a-DSL" id="ghfieldname" ng-model="reponame" checked> What is a DSL
-        </label> 
-
-
-        <p>Or, Enter Github Username and Reponame </p>
-
-        <input type="text" id="ghfieldname" ng-model="username" placeholder="Github username...">
-        <br> 
-        <input type="text" id="ghfieldname" ng-model="reponame" placeholder="Github reponame...">
-
-
+         <h2>Organization name: </h2> <br>
+         <input type="text" id="ghfieldname" ng-model="orgname" placeholder="Organization Name...">   
         <br>
 
-        <a href="#" id="ghsubmitbtn" ng-click="getGitInfo()">Get Files for User + Repo</a>
-
+        <a href="#" id="ghsubmitbtn" ng-click="getReposForOrg()">Load Repositories</a>
         <div id="ghapidata" class="clearfix"></div>
-     </div>
-     <div ng-show="userNotFound">
-      <h2>No User Info Found</h2>
-   </div>
-   <div ng-show="loaded">
+      </div>
 
+      <!-- (1) If no repositories are found  -->
+      <div ng-show="orgNotFound">
+         <h2>Organization not found :( </h2>
+      </div>
+
+      <!-- (1) If repositories are found, list out the pull requests -->
+      <div ng-show="loaded">
+         <div class="ghcontent">
+            <p ng-hide="reposFound">No repos in the organization found :( </p>
+            <div ng-show="reposFound">
+               <p><strong>Repos List:</strong></p>
+               <ul ng-repeat="repo in repos">
+                  <ul>
+                     <li>
+                        <!-- Radio button must have same name to prevent selecting multiple -->
+                        <label>
+                        <input type="radio" id="ghfieldname" value = "" ng-model="reponame" name ="selectRepo" checked> {{repo.name}}
+                        </label>
+                     </li>
+                  </ul>
+               </ul>
+               <!-- (2) Get pull requests for a given organization + repository -->
+               <a href="#" id="ghsubmitbtn" ng-click="getPullRequestsForRepo()">Load Pull Requests</a>
+               <div id="ghapidata" class="clearfix"></div>
+            </div>
+         </div>
+      </div>
+
+      
+
+      <!-- (2) If no pull requests found -->
+      <div ng-show="prNotFound">
+         <h2>No pull requests found for this repository. </h2>
+      </div>
+
+      <!-- (2) If pull requests are found -->
+      <div ng-show="loaded">
+         <div class="ghcontent">
+            <p ng-hide="pullsFound"></p>
+            <div class="repolist clearfix">
+               <div ng-show="pullsFound">
+                  <p><strong>Pull Requests:</strong></p>
+                  <ul ng-repeat="pull in pulls">
+                     <ul>
+                        <li>
+                          <li><a href="{{pull.html_url}}" target="_blank"> {{pull.name}} </a></li>
+                        </li>
+                     </ul>
+                  </ul>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <!-- Credit to original source material -->
+      <p>
+         Material Adapted From
+         <a href="http://code.notsoclever.cc/simple-github-api-webapp-angularjs-style/">http://code.notsoclever.cc/simple-github-api-webapp-angularjs-style/</a>
+      </p>
+   </div>
+<!--       
       <h2> {{user.name}}
          <span class="smallname">(@<a href="{{user.html_url}}" target="_blank"> {{user.login}} </a>)</span>
       </h2>
@@ -90,7 +107,7 @@
                <p><strong>Time of Last Commit:</strong></p>
                <p><strong><a href="{{timestamp.html_url}}" target="_blank"> {{timestamp}} </a></strong></p>
                <br>
-               
+
                <p><strong>Files List:</strong></p>
                <ul ng-repeat="file in files">
                   <ul>
@@ -98,47 +115,88 @@
                   </ul>
                </ul>
             </div>
-         </div>
-      </div>
-      <p>
-         Material Adapted From
-         <a href="http://code.notsoclever.cc/simple-github-api-webapp-angularjs-style/">http://code.notsoclever.cc/simple-github-api-webapp-angularjs-style/</a>
-      </p>
-   </div>
+         </div> -->
+
 
 
    <script>
    function GitHubCtrl($scope, $http) {
-      $scope.getGitInfo = function () {
-         $scope.userNotFound = false;
+      $scope.getReposForOrg = function() {
+         $scope.orgNotFound = false;
          $scope.loaded = false;
-         // User
-         $http.get("https://api.github.com/users/" + $scope.username)
-         .success(function (data) {
-            if (data.name == "") data.name = data.login;
-            $scope.user = data;
-            $scope.loaded = true;
-         })
-         .error(function () {
-            $scope.userNotFound = true;
-         });
-         // Repo + Timestamp
-         $http.get("https://api.github.com/repos/" + $scope.username + "/" +  $scope.reponame)
+
+         // Call to find repositories
+         $http.get("https://api.github.com/orgs/" + $scope.orgname + "/repos")
          .success(function (data) {
             if (data.name == "") data.name = data.name;
-            $scope.reponame = data.name;
-            $scope.timestamp = data.pushed_at
+            $scope.repos = data;
             $scope.loaded = true;
+            $scope.reposFound = data.length > 0;
          })
          .error(function () {
-            $scope.repoNotFound = true;
+            $scope.orgNotFound = true;
          });
-         // Files in Repo
-         $http.get("https://api.github.com/repos/" + $scope.username + "/" + $scope.reponame + "/contents").success(function (data) {
-            $scope.files = data;
-            $scope.reposFound = data.length > 0;
-         });
+
       }
+      $scope.getPullRequestsForRepo = function() {
+         $scope.prNotFound = false;
+         $scope.loaded = false;
+
+         // Set the selected radio button value
+         var repoSelected = document.getElementById("ghfieldname").name;
+         ghfieldname.value = repoSelected;
+         window.alert($scope.reponame);
+
+         // Call to find repositories
+         $http.get("https://api.github.com/repos/" + $scope.orgname + "/" 
+                                                   + $scope.reponame + "/pulls")
+         .success(function (data) {
+            if (data.name == "") data.name = data.name;
+            $scope.pulls = data;
+            $scope.loaded = true;
+            $scope.pullsFound = data.length > 0;
+         })
+         .error(function () {
+            $scope.prNotFound = true;
+         });
+
+      }
+      // $scope.getFilesForPullRequest = function() {
+
+      // }
+      // $scope.getGitInfo = function () {
+      //    $scope.userNotFound = false;
+      //    $scope.loaded = false;
+      //    // User
+      //    $http.get("https://api.github.com/users/" + $scope.username)
+      //    .success(function (data) {
+      //       if (data.name == "") data.name = data.login;
+      //       $scope.user = data;
+      //       $scope.loaded = true;
+      //    })
+      //    .error(function () {
+      //       $scope.userNotFound = true;
+      //    });
+      //    // Repo + Timestamp
+      //    $http.get("https://api.github.com/repos/" + $scope.username + "/" +  $scope.reponame)
+      //    .success(function (data) {
+      //       if (data.name == "") data.name = data.name;
+      //       $scope.reponame = data.name;
+      //       $scope.timestamp = data.pushed_at
+      //       $scope.loaded = true;
+      //    })
+      //    .error(function () {
+      //       $scope.repoNotFound = true;
+      //    });
+      //    // Files in Repo
+      //    $http.get("https://api.github.com/repos/" + $scope.username + "/" + $scope.reponame + "/contents").success(function (data) {
+      //       $scope.files = data;
+      //       $scope.reposFound = data.length > 0;
+      //    });
+      // }
+
+
+
    }
    </script>
 

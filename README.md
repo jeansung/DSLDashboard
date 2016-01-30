@@ -7,6 +7,8 @@
 
 - ~~Figure out the necessary github api calls~~
 - github authentication
+	- https://developer.github.com/guides/getting-started/
+	- https://github.com/prose/gatekeeper
 - write Javascript / HTML for each of the three components in reference
 - Template out the HTML and Javscript parts, maybe using Python to asseble
 - documentation

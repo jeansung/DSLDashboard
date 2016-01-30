@@ -8,65 +8,65 @@
    <link rel="stylesheet" type="text/css" media="all" href="css/styles.css">
 
    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
    <script type="text/javascript" src="http://twitter.github.io/bootstrap/assets/js/bootstrap-dropdown.js"></script>
 
 </head>
 
 <body ng-controller="GitHubCtrl">
 
-<div id="w">
-   <div>
-      <h1>DSL Grading Dashboard</h1>
+   <div id="w">
+      <div>
+         <h1>DSL Grading Dashboard</h1>
 
-   <h2>Github Username:</h2> <br>
-   <label>
-       <input type="radio" value="jeansung" id="ghfieldname" ng-model="username" checked> Jean Sung
-   </label> 
+         <h2>Github Username:</h2> <br>
+         <label>
+           <input type="radio" value="jeansung" id="ghfieldname" ng-model="username" checked> Jean Sung
+        </label> 
 
-   <label>
-       <input type="radio" value="bwiedermann" id="ghfieldname" ng-model="username" checked> Prof Ben 
-   </label> 
+        <label>
+           <input type="radio" value="bwiedermann" id="ghfieldname" ng-model="username" checked> Prof Ben 
+        </label> 
 
-   <label>
-       <input type="radio" value="hmc-aozdemir" id="ghfieldname" ng-model="username" checked> Alex O.
-   </label> 
-
-
-   <h2>Github Repo:</h2> <br>
-
-   <label>
-       <input type="radio" value="internal-lab" id="ghfieldname" ng-model="reponame" checked> Internal Lab 
-   </label> 
-
-   <label>
-       <input type="radio" value="piconot-external" id="ghfieldname" ng-model="reponame" checked> External Lab 
-   </label> 
-
-   <label>
-       <input type="radio" value="project-notebook" id="ghfieldname" ng-model="reponame" checked> Project Notebook 
-   </label> 
-
-   <label>
-       <input type="radio" value="what-is-a-DSL" id="ghfieldname" ng-model="reponame" checked> What is a DSL
-   </label> 
+        <label>
+           <input type="radio" value="hmc-aozdemir" id="ghfieldname" ng-model="username" checked> Alex O.
+        </label> 
 
 
-      <p>Or, Enter Github Username and Reponame </p>
+        <h2>Github Repo:</h2> <br>
 
-      <input type="text" id="ghfieldname" ng-model="username" placeholder="Github username...">
-       <br> 
-      <input type="text" id="ghfieldname" ng-model="reponame" placeholder="Github reponame...">
+        <label>
+           <input type="radio" value="internal-lab" id="ghfieldname" ng-model="reponame" checked> Internal Lab 
+        </label> 
+
+        <label>
+           <input type="radio" value="piconot-external" id="ghfieldname" ng-model="reponame" checked> External Lab 
+        </label> 
+
+        <label>
+           <input type="radio" value="project-notebook" id="ghfieldname" ng-model="reponame" checked> Project Notebook 
+        </label> 
+
+        <label>
+           <input type="radio" value="what-is-a-DSL" id="ghfieldname" ng-model="reponame" checked> What is a DSL
+        </label> 
 
 
-      <br>
+        <p>Or, Enter Github Username and Reponame </p>
 
-      <a href="#" id="ghsubmitbtn" ng-click="getGitInfo()">Get Files for User + Repo</a>
+        <input type="text" id="ghfieldname" ng-model="username" placeholder="Github username...">
+        <br> 
+        <input type="text" id="ghfieldname" ng-model="reponame" placeholder="Github reponame...">
 
-      <div id="ghapidata" class="clearfix"></div>
-   </div>
-   <div ng-show="userNotFound">
+
+        <br>
+
+        <a href="#" id="ghsubmitbtn" ng-click="getGitInfo()">Get Files for User + Repo</a>
+
+        <div id="ghapidata" class="clearfix"></div>
+     </div>
+     <div ng-show="userNotFound">
       <h2>No User Info Found</h2>
    </div>
    <div ng-show="loaded">
@@ -79,60 +79,60 @@
          <div class="avi">
             <a href="{{ user.html_url }}" target="_blank">
                <img src="{{ user.avatar_url }}" width="80" height="80" alt="{{ user.login }}"></a>
+            </div>
+            Followers: {{ user.followers }} - Following: {{ user.following }}<br>Repos: {{ user.public_repos }}</p>
          </div>
-         Followers: {{ user.followers }} - Following: {{ user.following }}<br>Repos: {{ user.public_repos }}</p>
-      </div>
 
-      <div class="repolist clearfix">
-         <p ng-hide="reposFound">No repos!</p>
+         <div class="repolist clearfix">
+            <p ng-hide="reposFound">No repos!</p>
 
-         <div ng-show="reposFound">
-            <p><strong>Time of Last Commit:</strong></p>
-            <p><strong><a href="{{timestamp.html_url}}" target="_blank"> {{timestamp}} </a></strong></p>
-            <br>
-            
-            <p><strong>Files List:</strong></p>
-            <ul ng-repeat="file in files">
-               <ul>
-                  <li><a href="{{file.html_url}}" target="_blank"> {{file.name}} </a></li>
+            <div ng-show="reposFound">
+               <p><strong>Time of Last Commit:</strong></p>
+               <p><strong><a href="{{timestamp.html_url}}" target="_blank"> {{timestamp}} </a></strong></p>
+               <br>
+               
+               <p><strong>Files List:</strong></p>
+               <ul ng-repeat="file in files">
+                  <ul>
+                     <li><a href="{{file.html_url}}" target="_blank"> {{file.name}} </a></li>
+                  </ul>
                </ul>
-            </ul>
+            </div>
          </div>
       </div>
+      <p>
+         Material Adapted From
+         <a href="http://code.notsoclever.cc/simple-github-api-webapp-angularjs-style/">http://code.notsoclever.cc/simple-github-api-webapp-angularjs-style/</a>
+      </p>
    </div>
-   <p>
-   Material Adapted From
-   <a href="http://code.notsoclever.cc/simple-github-api-webapp-angularjs-style/">http://code.notsoclever.cc/simple-github-api-webapp-angularjs-style/</a>
-</p>
-</div>
 
 
-<script>
+   <script>
    function GitHubCtrl($scope, $http) {
       $scope.getGitInfo = function () {
          $scope.userNotFound = false;
          $scope.loaded = false;
          // User
          $http.get("https://api.github.com/users/" + $scope.username)
-               .success(function (data) {
-                  if (data.name == "") data.name = data.login;
-                  $scope.user = data;
-                  $scope.loaded = true;
-               })
-               .error(function () {
-                  $scope.userNotFound = true;
-               });
+         .success(function (data) {
+            if (data.name == "") data.name = data.login;
+            $scope.user = data;
+            $scope.loaded = true;
+         })
+         .error(function () {
+            $scope.userNotFound = true;
+         });
          // Repo + Timestamp
          $http.get("https://api.github.com/repos/" + $scope.username + "/" +  $scope.reponame)
-               .success(function (data) {
-                  if (data.name == "") data.name = data.name;
-                  $scope.reponame = data.name;
-                  $scope.timestamp = data.pushed_at
-                  $scope.loaded = true;
-               })
-               .error(function () {
-                  $scope.repoNotFound = true;
-               });
+         .success(function (data) {
+            if (data.name == "") data.name = data.name;
+            $scope.reponame = data.name;
+            $scope.timestamp = data.pushed_at
+            $scope.loaded = true;
+         })
+         .error(function () {
+            $scope.repoNotFound = true;
+         });
          // Files in Repo
          $http.get("https://api.github.com/repos/" + $scope.username + "/" + $scope.reponame + "/contents").success(function (data) {
             $scope.files = data;
@@ -140,7 +140,7 @@
          });
       }
    }
-</script>
+   </script>
 
 </body>
 </html>

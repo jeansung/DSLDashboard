@@ -42,31 +42,34 @@
       </div>
 
       <!-- (2) If repositories are found, list out the pull requests -->
-      <div ng-show="loaded" ng-controller="GitHubCtrl">
+      <div ng-show="loaded">
          <div class="ghcontent">
             <p ng-hide="reposFound"></p>
             <div ng-show="reposFound">
                <h3> Repo List </h3>
                <ul ng-repeat="repo in repos">
                   <label> {{repo.name}}
-                      <input type="radio" ng-model="reponame" ng-value="{{repo.name}}" value="{{repo.name}}" checked /> 
+                      <input type="radio" name="selectedRepo" ng-model="$parent.selectedRepo" ng-value="{{repo.name}}"required /> 
                   </label>
                </ul>
-               <tt>repo = {{selectedRepoName}}</tt><br/>
+
+               
+               <br>
+
+
+
                <!-- (3) Get pull requests for a given organization + repository -->
                <a href="#" id="ghsubmitbtn" ng-click="getPullRequestsForRepo()">Load Pull Requests</a>
-               <div id="ghapidata" class="clearfix"></div>
+               <div class="clearfix"></div>
             </div>
       </div>
 
       
 
-      <!-- (3) If no pull requests found -->
-      <div ng-show="prNotFound">
+<!--       <div ng-show="prNotFound">
          <h2>No pull requests found for this repository. </h2>
       </div>
  
-      <!-- (3) If pull requests are found -->
       <div ng-show="loaded">
          <div class="ghcontent">
             <p ng-hide="pullsFound"></p>
@@ -84,7 +87,7 @@
             </div>
          </div>
       </div>
-   </div>
+   </div> -->
 
 
 
@@ -113,36 +116,30 @@
 
       }
       $scope.getPullRequestsForRepo = function() {
-         $scope.reponame = 'NULL';
-         
          console.log($scope);
-         
-         // console.log($scope.ghusername);
-         // console.log($scope.ghtoken);
-         // console.log($scope.orgname);
-         // console.log($scope.selectedRepo);
+         //console.log($scope.selectedRepo)
+
+         var repoSelected = document.getElementsByName("selectedRepo");
+         alert(repoSelected);
+         // ghfieldname.value = repoSelected;
+         // window.alert($scope.reponame);
 
          $scope.prNotFound = false;
          $scope.loaded = false;
 
 
-         // // Set the selected radio button value
-         // var repoSelected = document.getElementById("ghfieldname").name;
-         // ghfieldname.value = repoSelected;
-         // window.alert($scope.reponame);
-
          // Call to find repositories
-         $http.get("https://api.github.com/repos/" + $scope.orgname + "/" 
-                                                   + $scope.reponame + "/pulls")
-         .success(function (data) {
-            if (data.name == "") data.name = data.name;
-            $scope.pulls = data;
-            $scope.loaded = true;
-            $scope.pullsFound = data.length > 0;
-         })
-         .error(function () {
-            $scope.prNotFound = true;
-         });
+         // $http.get("https://api.github.com/repos/" + $scope.orgname + "/" 
+         //                                           + $scope.reponame + "/pulls")
+         // .success(function (data) {
+         //    if (data.name == "") data.name = data.name;
+         //    $scope.pulls = data;
+         //    $scope.loaded = true;
+         //    $scope.pullsFound = data.length > 0;
+         // })
+         // .error(function () {
+         //    $scope.prNotFound = true;
+         // });
 
       }
 

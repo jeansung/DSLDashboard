@@ -47,16 +47,16 @@
             <p ng-hide="reposFound"></p>
             <div ng-show="reposFound">
                <h3> Repo List </h3>
-               <ul ng-repeat="repo in repos">
-                  <label> {{repo.name}}
-                      <input type="radio" name="selectedRepo" ng-model="$parent.selectedRepo" ng-value="{{repo.name}}"required /> 
+               <ul ng-repeat="repo in repos" for="{{repo}}">
+                  <label name= "repoLabel" > {{repo.name}} 
+                      <input 
+                        type="radio" 
+                        name="selectedRepo"
+                        ng-model="$parent.selectedRepo"
+                        ng-value="{{repo.name}}"
+                     required/> 
                   </label>
                </ul>
-
-               
-               <br>
-
-
 
                <!-- (3) Get pull requests for a given organization + repository -->
                <a href="#" id="ghsubmitbtn" ng-click="getPullRequestsForRepo()">Load Pull Requests</a>
@@ -64,30 +64,36 @@
             </div>
       </div>
 
-      
-
-<!--       <div ng-show="prNotFound">
-         <h2>No pull requests found for this repository. </h2>
+      <!-- (3) If no repositories are found  -->
+      <div ng-show="prNotFound">
+         <h2> Pull requests for given repository not found</h2>
       </div>
- 
+
+      <!-- (3) If repositories are found, list out the pull requests -->
       <div ng-show="loaded">
          <div class="ghcontent">
             <p ng-hide="pullsFound"></p>
-            <div class="repolist clearfix">
-               <div ng-show="pullsFound">
-                  <p><strong>Pull Requests:</strong></p>
-                  <ul ng-repeat="pull in pulls">
-                     <ul>
-                        <li>
-                          <li><a href="{{pull.html_url}}" target="_blank"> {{pull.name}} </a></li>
-                        </li>
-                     </ul>
-                  </ul>
-               </div>
+            <div ng-show="pullsFound">
+               <h3> Repo List </h3>
+               <ul ng-repeat="pull in pulls" for="{{pull}}">
+                  <label name= "pullLabel" > {{pull.title}} 
+                      <input 
+                        type="radio" 
+                        name="selectedPull"
+                        ng-model="$parent.selectedPull"
+                        ng-value="{{pull.title}}"
+                     required/> 
+                  </label>
+               </ul>
+
+               <!-- (3) Get pull requests for a given organization + repository -->
+               <a href="#" id="ghsubmitbtn" ng-click="getPullRequestsForRepo()">Load Pull Requests</a>
+               <div class="clearfix"></div>
             </div>
-         </div>
       </div>
-   </div> -->
+
+
+   
 
 
 
@@ -116,32 +122,91 @@
 
       }
       $scope.getPullRequestsForRepo = function() {
-         console.log($scope);
-         //console.log($scope.selectedRepo)
 
-         var repoSelected = document.getElementsByName("selectedRepo");
-         alert(repoSelected);
-         // ghfieldname.value = repoSelected;
-         // window.alert($scope.reponame);
+         var radios = document.getElementsByName("selectedRepo");
+         var labels = document.getElementsByName("repoLabel");
+         var selected = "NOT SET"
+         for (var i = 0, length = radios.length; i < length; i++) {
+             if (radios[i].checked) {
+               selected = labels[i].textContent.replace(/ /g,'');
+               break;
+             }
+         }
+
+         $scope.reponame = selected 
+         console.log(selected);
 
          $scope.prNotFound = false;
          $scope.loaded = false;
 
 
-         // Call to find repositories
-         // $http.get("https://api.github.com/repos/" + $scope.orgname + "/" 
-         //                                           + $scope.reponame + "/pulls")
-         // .success(function (data) {
-         //    if (data.name == "") data.name = data.name;
-         //    $scope.pulls = data;
-         //    $scope.loaded = true;
-         //    $scope.pullsFound = data.length > 0;
-         // })
-         // .error(function () {
-         //    $scope.prNotFound = true;
-         // });
+         //Call to find repositories
+         $http.get("https://" +
+         $scope.ghusername +
+         ":" +
+         $scope.ghtoken +
+         "@api.github.com/repos/" +
+         $scope.orgname + "/" +
+         selected + 
+         "/pulls")
+         .success(function (data) {
+            if (data.name == "") data.name = data.name;
+            $scope.pulls = data;
+            $scope.loaded = true;
+            $scope.pullsFound = data.length > 0;
+         })
+         .error(function () {
+            $scope.prNotFound = true;
+         });
 
       }
+
+      $scope.getFilesForPullRequest = function() {
+         // Files in Repo
+         $http.get("https://" +
+         $scope.ghusername +
+         ":" +
+         $scope.ghtoken +
+         "@api.github.com/repos/" +
+         $scope.orgname + "/" +
+         selected + 
+         "/pulls")
+         $http.get("https://api.github.com/repos/" + $scope.username + "/" + $scope.reponame + "/contents").success(function (data) {
+            $scope.files = data;
+            $scope.reposFound = data.length > 0;
+         });
+      }
+      $scope.getGitInfo = function () {
+         $scope.userNotFound = false;
+         $scope.loaded = false;
+         // User
+         $http.get("https://api.github.com/users/" + $scope.username)
+         .success(function (data) {
+            if (data.name == "") data.name = data.login;
+            $scope.user = data;
+            $scope.loaded = true;
+         })
+         .error(function () {
+            $scope.userNotFound = true;
+         });
+         // Repo + Timestamp
+         $http.get("https://api.github.com/repos/" + $scope.username + "/" +  $scope.reponame)
+         .success(function (data) {
+            if (data.name == "") data.name = data.name;
+            $scope.reponame = data.name;
+            $scope.timestamp = data.pushed_at
+            $scope.loaded = true;
+         })
+         .error(function () {
+            $scope.repoNotFound = true;
+         });
+         // Files in Repo
+         $http.get("https://api.github.com/repos/" + $scope.username + "/" + $scope.reponame + "/contents").success(function (data) {
+            $scope.files = data;
+            $scope.reposFound = data.length > 0;
+         });
+      }
+
 
    }
    </script>

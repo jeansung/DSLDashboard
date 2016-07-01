@@ -1,0 +1,19 @@
+Github Educaton
+
+- Github's branch for teachers and students
+- can use Webhooks to do automated testing (it provides a way to notify an external server when actions occur on a repo or in an organization)
+- teachers_pet is an older command line tool, replaced by Github Classrooms 
+
+Teachers Pet
+https://github.com/education/teachers_pet
+
+Github Classrooms
+- subset of tools provided by Github for Education
+- primarily focused on automating repository creation and access control
+- specifically, based around assignments (which are starter repos)
+- students are invited through private URL 
+- support forking (what we are doing now) or sandboxing (duplicated repos/ "fake forks", designed for private CS 70 like assignments)
+
+Basic guide:
+https://education.github.com/guide
+
